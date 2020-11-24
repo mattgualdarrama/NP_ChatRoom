@@ -48,7 +48,33 @@ int main() {
         int socketCount = select(0, &masterCopy, NULL, NULL, NULL); //sockets will be stored in masterCopy
 
         for (int i = 0; i < socketCount; i++) {
+            SOCKET sock = masterCopy.fd_array[i];
 
+            if (sock == socListening) {
+                // Accept new connection
+                SOCKET client = accept(socListening, NULL, NULL);
+
+                // Add new connection to master file set
+                FD_SET(client, &master);
+                
+                // Send a welcome message
+                string welcomeMessage = "Welcome to the chat server";
+                send(client, welcomeMessage.c_str(), welcomeMessage.size() + 1, 0);
+
+                // TODO: broadcast new connection to other users
+            }
+            else {
+                char buff[8192];
+                ZeroMemory(buff, 8192); //fill buffer with 0s
+
+                int readBytes = recv(sock, buff, sizeof(buff), 0);
+
+
+                // Accept new message
+                
+
+                // Send message to other clients but NOT listening sock
+            }
         }
     }
 
