@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <thread>
+#include <sstream>
 
 #pragma comment (lib, "ws2_32.lib")
 
@@ -58,7 +59,7 @@ int main() {
                 FD_SET(client, &master);
                 
                 // Send a welcome message
-                string welcomeMessage = "Welcome to the chat server";
+                string welcomeMessage = "Welcome to the chat server\r\n";
                 send(client, welcomeMessage.c_str(), welcomeMessage.size() + 1, 0);
 
                 // TODO: broadcast new connection to other users
@@ -79,10 +80,17 @@ int main() {
                     for (int i = 0; i < master.fd_count; i++) {
                         SOCKET outSock = master.fd_array[i];
                         if (outSock != socListening && outSock != sock) {
-                            send(outSock, buff, readBytes, 0);
+                            //send(outSock, buff, readBytes, 0);
+
+                            ostringstream ss;
+                            ss << "SOCKET #: " << sock << ": " << buff << "\r\n";
+                            string msgOut = ss.str();
+
+                            send(outSock, msgOut.c_str(), msgOut.size() + 1, 0); //TODO Format, username, timestamp
                         }
                     }
                 }
+
             }
         }
     }
