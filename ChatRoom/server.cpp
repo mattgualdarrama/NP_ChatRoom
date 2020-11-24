@@ -134,6 +134,8 @@ bool validateCommand(string c) {
 * A function to broadcast a message to all clients currently connected
 *   message: message to send
 *   master: the file descriptor set
+*   listeningSocket: active listening socket
+*   currentSocket: 
 *   
 */
 void broadcastMessage(string message, fd_set &master, SOCKET listeningSocket, SOCKET currentSocket) {
