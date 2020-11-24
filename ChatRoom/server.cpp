@@ -65,15 +65,24 @@ int main() {
             }
             else {
                 char buff[8192];
-                ZeroMemory(buff, 8192); //fill buffer with 0s
+                ZeroMemory(buff, sizeof(buff)); //fill buffer with 0s
 
+                // Receiving message
                 int readBytes = recv(sock, buff, sizeof(buff), 0);
-
-
-                // Accept new message
-                
-
-                // Send message to other clients but NOT listening sock
+                if (readBytes <= 0) {
+                    // Connection closed, drop client
+                    closesocket(sock);
+                    FD_CLR(sock, &master);
+                }
+                else {
+                    // Send message to other clients, NOT listening socket
+                    for (int i = 0; i < master.fd_count; i++) {
+                        SOCKET outSock = master.fd_array[i];
+                        if (outSock != socListening && outSock != sock) {
+                            send(outSock, buff, readBytes, 0);
+                        }
+                    }
+                }
             }
         }
     }
