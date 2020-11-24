@@ -11,6 +11,7 @@
 using namespace std;
 
 bool confirmConnection();
+void broadcastMessage(string, fd_set&, SOCKET, SOCKET);
 
 int main() {
     if (!confirmConnection()) {
@@ -68,7 +69,7 @@ int main() {
                     SOCKET outSock = master.fd_array[i];
                     if (outSock != socListening && outSock != sock) {
 
-                        send(outSock, newClient.c_str(), newClient.size() + 1, 0); //TODO Format, username, timestamp
+                        send(outSock, newClient.c_str(), newClient.size() + 1, 0); 
                     }
                 }
             }
@@ -89,23 +90,36 @@ int main() {
                         SOCKET outSock = master.fd_array[i];
                         if (outSock != socListening && outSock != sock) {
 
-
                             ostringstream ss;
-                            ss << "SOCKET #: " << sock << ": " << buff << "\r\n";
+                            ss << "SOCKET # " << sock << ": " << buff << "\r\n";
                             string msgOut = ss.str();
 
-                            send(outSock, msgOut.c_str(), msgOut.size() + 1, 0); //TODO Format, username, timestamp
+                            broadcastMessage(msgOut, master, socListening, sock);
+                            //send(outSock, msgOut.c_str(), msgOut.size() + 1, 0); //TODO Format, username, timestamp
                         }
                     }
                 }
 
             }
         }
+    } 
+
+}
+
+/*
+* A function to broadcast a message to all clients currently connected
+*   message: message to send
+*   master: the file descriptor set
+*   
+*/
+void broadcastMessage(string message, fd_set &master, SOCKET listeningSocket, SOCKET currentSocket) {
+    for (int i = 0; i < master.fd_count; i++) {
+        SOCKET outSock = master.fd_array[i];
+
+        if (outSock != listeningSocket && outSock != currentSocket) {
+            send(outSock, message.c_str(), message.size() + 1, 0);
+        }
     }
-
-
-    
-
 }
 
 bool confirmConnection() {
