@@ -7,7 +7,6 @@
 
 #pragma comment (lib, "ws2_32.lib")
 
-//test 
 using namespace std;
 
 bool confirmConnection();
@@ -25,9 +24,15 @@ int main() {
         return 1;
     }
 
+    // Bind IP address and port to socket
+    sockaddr_in hint;
+    hint.sin_family = AF_INET;
+    hint.sin_port = htons(54000);
+    hint.sin_addr.S_un.S_addr = INADDR_ANY;
 
+    bind(socListening, (sockaddr*)&hint, sizeof(hint));
 
-
+    
 
 }
 
