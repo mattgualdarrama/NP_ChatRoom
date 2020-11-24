@@ -63,6 +63,14 @@ int main() {
                 send(client, welcomeMessage.c_str(), welcomeMessage.size() + 1, 0);
 
                 // TODO: broadcast new connection to other users
+                string newClient = "A new client user has joined!\r\n";
+                for (int i = 0; i < master.fd_count; i++) {
+                    SOCKET outSock = master.fd_array[i];
+                    if (outSock != socListening && outSock != sock) {
+
+                        send(outSock, newClient.c_str(), newClient.size() + 1, 0); //TODO Format, username, timestamp
+                    }
+                }
             }
             else {
                 char buff[8192];
@@ -80,7 +88,7 @@ int main() {
                     for (int i = 0; i < master.fd_count; i++) {
                         SOCKET outSock = master.fd_array[i];
                         if (outSock != socListening && outSock != sock) {
-                            //send(outSock, buff, readBytes, 0);
+
 
                             ostringstream ss;
                             ss << "SOCKET #: " << sock << ": " << buff << "\r\n";
