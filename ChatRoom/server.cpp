@@ -61,7 +61,7 @@ int main() {
                 
                 // Send a welcome message
                 string welcomeMessage = "Welcome to the chat server\r\n";
-                send(client, welcomeMessage.c_str(), welcomeMessage.size() + 1, 0);
+                broadcastMessage(welcomeMessage, master, socListening, sock);
 
                 // TODO: broadcast new connection to other users
                 string newClient = "A new client user has joined!\r\n";
