@@ -32,6 +32,27 @@ int main() {
 
     bind(socListening, (sockaddr*)&hint, sizeof(hint));
 
+    // Tell server to listen on socListen
+    listen(socListening, SOMAXCONN);
+
+    // Define
+    fd_set master;
+    FD_ZERO(&master); //ensure FD is clear
+
+    FD_SET(socListening, &master);
+
+    //main event loop
+    while (1) {
+        fd_set masterCopy = master;
+
+        int socketCount = select(0, &masterCopy, NULL, NULL, NULL); //sockets will be stored in masterCopy
+
+        for (int i = 0; i < socketCount; i++) {
+
+        }
+    }
+
+
     
 
 }
