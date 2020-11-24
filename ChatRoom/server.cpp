@@ -2,8 +2,6 @@
 #include <WinSock2.h>
 #include <WS2tcpip.h>
 #include <string>
-#include <vector>
-#include <thread>
 #include <sstream>
 
 #pragma comment (lib, "ws2_32.lib")
@@ -61,18 +59,14 @@ int main() {
                 FD_SET(client, &master);
                 
                 // Send a welcome message
-                string welcomeMessage = "Welcome to the chat server\r\n";
+                string welcomeMessage = "Welcome to the chat server";
                 broadcastMessage(welcomeMessage, master, socListening, sock);
 
-                // TODO: broadcast new connection to other users
-                string newClient = "A new client user has joined!\r\n";
-                for (int i = 0; i < master.fd_count; i++) {
-                    SOCKET outSock = master.fd_array[i];
-                    if (outSock != socListening && outSock != sock) {
+                string topicMessage = "Current topic: None";
 
-                        send(outSock, newClient.c_str(), newClient.size() + 1, 0); 
-                    }
-                }
+                // TODO: broadcast new connection to other users
+                string newClient = "A new client user has joined!";
+                broadcastMessage(newClient, master, socListening, sock);
             }
             else {
                 char buff[8192];
@@ -99,7 +93,7 @@ int main() {
                         }
                         else {
                             string invldCommand = "Invalid command\r\n";
-                            send(sock, invldCommand.c_str(), invldCommand.size() + 1, 0);
+                            send(sock, invldCommand.c_str(), invldCommand.size() + 1, 0); //send message to the user with invalid command, do not broadcast to all users
                             continue;
                         }
                     }
@@ -113,7 +107,7 @@ int main() {
 
                             //TODO usernames
                             ostringstream ss;
-                            ss << "SOCKET # " << sock << ": " << buff << "\r\n";
+                            ss << "SOCKET # " << sock << ": " << buff;
                             string msgOut = ss.str();
                             broadcastMessage(msgOut, master, socListening, sock);
 
@@ -141,6 +135,8 @@ bool validateCommand(string c) {
 void broadcastMessage(string message, fd_set &master, SOCKET listeningSocket, SOCKET currentSocket) {
     for (int i = 0; i < master.fd_count; i++) {
         SOCKET outSock = master.fd_array[i];
+
+        message = message + "\r\n";  //Add a new line to each message
 
         if (outSock != listeningSocket && outSock != currentSocket) {
             send(outSock, message.c_str(), message.size() + 1, 0);
