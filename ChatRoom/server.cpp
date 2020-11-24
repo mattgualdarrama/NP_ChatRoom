@@ -13,6 +13,19 @@ using namespace std;
 bool confirmConnection();
 
 int main() {
+    if (!confirmConnection()) {
+        cerr << "Winsock error";
+        return 1;
+    }
+
+    // Create a listening socket
+    SOCKET socListening = socket(AF_INET, SOCK_STREAM, 0);
+    if (socListening == INVALID_SOCKET) {
+        cerr << "Cannot create listneing socket.";
+        return 1;
+    }
+
+
 
 
 
