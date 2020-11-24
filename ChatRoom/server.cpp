@@ -10,6 +10,7 @@
 
 using namespace std;
 
+bool validateCommand(string);
 bool confirmConnection();
 void broadcastMessage(string, fd_set&, SOCKET, SOCKET);
 
@@ -85,17 +86,37 @@ int main() {
                     FD_CLR(sock, &master);
                 }
                 else {
+
+                    //TODO:  Check for commands
+                    // Commands will always start with an '!' and be exactly 4 alpha letters.  eg !help
+                    string command = "";
+                    if (buff[0] == '!') {
+                        for (int i = 1; i < 5; i++)
+                            command = command + buff[i];
+
+                        if (validateCommand(command)) {
+
+                        }
+                        else {
+                            string invldCommand = "Invalid command\r\n";
+                            send(sock, invldCommand.c_str(), invldCommand.size() + 1, 0);
+                            continue;
+                        }
+                    }
+
+
+                       
                     // Send message to other clients, NOT listening socket
                     for (int i = 0; i < master.fd_count; i++) {
                         SOCKET outSock = master.fd_array[i];
                         if (outSock != socListening && outSock != sock) {
 
+                            //TODO usernames
                             ostringstream ss;
                             ss << "SOCKET # " << sock << ": " << buff << "\r\n";
                             string msgOut = ss.str();
-
                             broadcastMessage(msgOut, master, socListening, sock);
-                            //send(outSock, msgOut.c_str(), msgOut.size() + 1, 0); //TODO Format, username, timestamp
+
                         }
                     }
                 }
@@ -106,6 +127,9 @@ int main() {
 
 }
 
+bool validateCommand(string c) {
+    return false;
+}
 /*
 * A function to broadcast a message to all clients currently connected
 *   message: message to send
