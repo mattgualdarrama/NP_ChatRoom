@@ -3,6 +3,7 @@
 #include <WS2tcpip.h>
 #include <string>
 #include <sstream>
+#include <vector>
 
 #pragma comment (lib, "ws2_32.lib")
 
@@ -11,6 +12,17 @@ using namespace std;
 bool validateCommand(string);
 bool confirmConnection();
 void broadcastMessage(string, fd_set&, SOCKET, SOCKET);
+
+const int SERVER_PASSWORD = 1234;
+const int ADMIN_PASSWORD = 666;
+
+struct user {
+    SOCKET sock;
+    string userName;
+    bool admin = false;
+};
+
+vector<user> connectedUsers;
 
 int main() {
     if (!confirmConnection()) {
